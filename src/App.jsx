@@ -26,7 +26,7 @@ const useStyles = makeStyles({
         flexGrow: 1,
     },
     card: {
-        width: "30%"
+        width: "50%"
     },
     bullet: {
         display: 'inline-block',
@@ -56,8 +56,8 @@ const App = () => {
 
     React.useEffect(() => {
         Webcam.set({
-            width: 320,
-            height: 240,
+            width: 320*1.8,
+            height: 240*1.8,
             image_format: 'jpg',
         });
         Webcam.attach('#my_camera');
@@ -165,10 +165,11 @@ const App = () => {
                         <CardContent>
 
                             <Typography variant="h5" component="h2">
-                                {message}
-
-                                {isLoading &&
-                                <CircularProgress style = {{marginRight:"1em"}}/>}
+                                <center>
+                                    {message}
+                                    {isLoading &&
+                                    <CircularProgress style = {{marginRight:"1em"}}/>}
+                                </center>
                             </Typography>
 
                         </CardContent>
