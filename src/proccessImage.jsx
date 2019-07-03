@@ -13,7 +13,7 @@ const b64toBlob = (b64Data) => {
     return blob;
 }
 
-export default function processImage(currPhoto, setCurrPhoto) {
+export default function processImage(data_uri, currPhoto, setCurrPhoto) {
     // Replace <Subscription Key> with your valid subscription key.
     // TODO - change subscriptionKey
     var subscriptionKey = "ee4fb5ee189d401482b19eca6613ea5b";
@@ -39,7 +39,7 @@ export default function processImage(currPhoto, setCurrPhoto) {
     };
 
     // const base64image = document.getElementById("imageprev").src;
-    const base64image = currPhoto.base64;
+    const base64image = data_uri;
     const blob = b64toBlob(base64image);
 
     // Display the image.
@@ -62,12 +62,13 @@ export default function processImage(currPhoto, setCurrPhoto) {
         .then(response => response.json())
         .then(recognizedFaces => {
             if (recognizedFaces && recognizedFaces.length > 0){
+                let faceId = recognizedFaces[0].faceId;
                 setCurrPhoto({
                     ...currPhoto,
-                    faceId : recognizedFaces[0].faceId
+                    faceId
                 });
 
-                return currPhoto.faceId;
+                return faceId;
             }
             // $("#responseTextArea").val(JSON.stringify(x , null, 2));
         })

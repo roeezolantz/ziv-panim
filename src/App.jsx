@@ -28,17 +28,22 @@ const App = () => {
         personalNumber.addEventListener("focusout", focusPersonalNumber);
     }, []);
 
-    const take_snapshot = () => {
-        // take snapshot and get image data
-        Webcam.snap(function (data_uri) {
-            // display results in page
-            setCurrPhoto({
-                ...currPhoto,
-                base64 : data_uri
+    const take_snapshot = async () => {
+        return new Promise((resolve, reject) => {
+
+            // take snapshot and get image data
+            Webcam.snap(function (data_uri) {
+                // display results in page
+                setCurrPhoto({
+                    ...currPhoto,
+                    base64: data_uri
+                });
+
+                resolve(data_uri);
+                // currPhoto.base64 = data_uri
+                // document.getElementById('results').innerHTML =
+                //     '<img id="imageprev" src="'+data_uri+'"/>';
             });
-            // currPhoto.base64 = data_uri
-            // document.getElementById('results').innerHTML =
-            //     '<img id="imageprev" src="'+data_uri+'"/>';
         });
     }
 
@@ -49,20 +54,20 @@ const App = () => {
             evt.target.value = personalNumberStr;
             setCurrPhoto({
                 ...currPhoto,
-                upn : personalNumberStr
+                upn: personalNumberStr
             });
             // currPhoto.upn = personalNumberStr;
 
             setTimeout(async () => {
-                take_snapshot();
-                const faceId = await processImage(currPhoto, setCurrPhoto);
+                const data_uri = await take_snapshot();
+                const faceId = await processImage(data_uri, currPhoto, setCurrPhoto);
                 const personId = await getPersonIdByUPN(personalNumberStr)
                 const isVerify = await verifyFaces(faceId, personId);
                 const backgroundColor = isVerify ? "#7be655" : "#f35858";
                 document.body.style.backgroundColor = backgroundColor;
 
                 evt.target.value = "";
-            }, 2000)
+            }, 0)
 
             return;
         }
@@ -76,7 +81,7 @@ const App = () => {
 
     return (
 
-        <center style={{direction: "rtl" }}>
+        <center style={{direction: "rtl"}}>
             מספר אישי:
             <input type="text"
                    name="peronalNumber"
