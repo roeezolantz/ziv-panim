@@ -45,7 +45,7 @@ export default function processImage(currPhoto, setCurrPhoto) {
     // Display the image.
     // document.querySelector("#sourceImage").src = base64image;
 
-    return fetch(uriBase + "?" + $.param(params), {
+    return fetch(uriBase + "?returnFaceId=true", {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, cors, *same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

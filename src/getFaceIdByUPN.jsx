@@ -1,4 +1,4 @@
-async function getPersonIdByUPN(currPhoto) {
+export default async function getPersonIdByUPN(upn) {
     const subscriptionKey = "ee4fb5ee189d401482b19eca6613ea5b";
 
     var uriBase =
@@ -14,7 +14,7 @@ async function getPersonIdByUPN(currPhoto) {
     })
         .then(response => response.json())
         .then(persons => {
-            const soldier = persons.find(p => p.userData === currPhoto.upn);
+            const soldier = persons.find(p => p.userData === upn);
             const personId = soldier.personId;
             return personId;
         })

@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
-import processImage from "proccessImage";
-import verifyFaces from "verify";
-
+import processImage from "./proccessImage";
+import verifyFaces from "./verify";
+import WebcamJS from "./WebcamJS";
+import getPersonIdByUPN from "./getFaceIdByUPN";
 
 const App = () => {
-
+    let Webcam = new WebcamJS().getWebcam();
+    let personalNumber;
     const [currPhoto, setCurrPhoto] = React.useState({
         base64: "",
         faceId: "",
@@ -40,16 +42,6 @@ const App = () => {
         });
     }
 
-    const saveSnap = () => {
-        // Get base64 value from <img id='imageprev'> source
-        var base64image = document.getElementById("imageprev").src;
-
-        Webcam.upload(base64image, 'upload.php', function (code, text) {
-            console.log('Save successfully');
-            //console.log(text);
-        });
-    }
-
     const handlePersonalNumberChange = (evt) => {
         const personalNumberFullStr = evt.target.value;
         if (personalNumberFullStr && personalNumberFullStr.length > 14) {
@@ -64,7 +56,7 @@ const App = () => {
             setTimeout(async () => {
                 take_snapshot();
                 const faceId = await processImage(currPhoto, setCurrPhoto);
-                const personId = await getPersonIdByUPN(currPhoto)
+                const personId = await getPersonIdByUPN(personalNumberStr)
                 const isVerify = await verifyFaces(faceId, personId);
                 const backgroundColor = isVerify ? "#7be655" : "#f35858";
                 document.body.style.backgroundColor = backgroundColor;
@@ -83,12 +75,12 @@ const App = () => {
     }
 
     return (
-        <center style="direction: rtl">
+
+        <center style={{direction: "rtl" }}>
             מספר אישי:
             <input type="text"
                    name="peronalNumber"
-                   id="peronalNumber"
-                   onChange=""/>
+                   id="peronalNumber"/>
 
             <br/><br/>
             <div id="my_camera"></div>
