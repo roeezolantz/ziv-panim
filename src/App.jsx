@@ -1,9 +1,45 @@
 import React from 'react';
+import {makeStyles} from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 import './App.css';
 import processImage from "./proccessImage";
 import verifyFaces from "./verify";
 import WebcamJS from "./WebcamJS";
 import getPersonIdByUPN from "./getFaceIdByUPN";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import mazpen from "./Mazpenlogo.png";
+import logo from "./logo.png";
+
+
+const useStyles = makeStyles({
+    root: {
+        flexGrow: 1,
+    },
+    menuButton: {
+
+    },
+    title: {
+        flexGrow: 1,
+    },
+    card: {
+        width: "30%"
+    },
+    bullet: {
+        display: 'inline-block',
+        margin: '0 2px',
+        transform: 'scale(0.8)',
+    },
+    title: {
+        fontSize: 14,
+    },
+    pos: {
+        marginBottom: 12,
+    },
+});
 
 const App = () => {
     let Webcam = new WebcamJS().getWebcam();
@@ -13,6 +49,10 @@ const App = () => {
         faceId: "",
         upn: ""
     });
+
+    const [statusColor, setstatusColor] = React.useState("#ffc220");
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [message, setMessage] = React.useState("אפשר להעביר חוגר עכשיו");
 
     React.useEffect(() => {
         Webcam.set({
@@ -26,6 +66,8 @@ const App = () => {
         personalNumber.focus();
         personalNumber.addEventListener("change", handlePersonalNumberChange);
         personalNumber.addEventListener("focusout", focusPersonalNumber);
+        window.document.body.style.backgroundColor = "#f5f5f5";
+        document.getElementById("my_camera").style.width = null;
     }, []);
 
     const take_snapshot = async () => {
@@ -47,7 +89,10 @@ const App = () => {
         });
     }
 
-    const handlePersonalNumberChange = (evt) => {
+    const handlePersonalNumberChange = async (evt) => {
+        setIsLoading(true);
+        setMessage("חוגר בבדיקה");
+
         const personalNumberFullStr = evt.target.value;
         if (personalNumberFullStr && personalNumberFullStr.length > 14) {
             const personalNumberStr = personalNumberFullStr.slice(7, 14);
@@ -56,40 +101,91 @@ const App = () => {
                 ...currPhoto,
                 upn: personalNumberStr
             });
-            // currPhoto.upn = personalNumberStr;
 
-            setTimeout(async () => {
-                const data_uri = await take_snapshot();
-                const faceId = await processImage(data_uri, currPhoto, setCurrPhoto);
-                const personId = await getPersonIdByUPN(personalNumberStr)
-                const isVerify = await verifyFaces(faceId, personId);
-                const backgroundColor = isVerify ? "#7be655" : "#f35858";
-                document.body.style.backgroundColor = backgroundColor;
+            const data_uri = await take_snapshot();
+            const faceId = await processImage(data_uri, currPhoto, setCurrPhoto);
+            const personId = await getPersonIdByUPN(personalNumberStr);
+            const isVerify = await verifyFaces(faceId, personId);
+            const backgroundColor = isVerify ? "#7be655" : "#f35858";
 
-                evt.target.value = "";
-            }, 0)
+            setIsLoading(false);
+            setMessage(isVerify ? "אפשר לעבור עכשיו, יום טוב" : "החוגר לא נקלט. ניתן לנסות שוב או לגשת לאחראי");
+
+            document.body.style.backgroundColor = backgroundColor;
+            setstatusColor(backgroundColor);
+            evt.target.value = "";
+
+            setTimeout(() => {
+                document.body.style.backgroundColor = "#f5f5f5";
+                setstatusColor("#ffc220");
+                setMessage("אפשר להעביר חוגר עכשיו");
+            }, 2000);
 
             return;
         }
         evt.target.value = "";
-        alert("AGAIN");
+        setMessage("לא קלטנו את הכרטיס טוב. אפשר שוב?");
+        setIsLoading(false);
     }
 
     const focusPersonalNumber = () => {
         personalNumber.focus();
     }
 
+    const classes = useStyles();
+
     return (
+        <div>
+            <AppBar position="static">
+                <Toolbar>
 
-        <center style={{direction: "rtl"}}>
-            מספר אישי:
-            <input type="text"
-                   name="peronalNumber"
-                   id="peronalNumber"/>
+                    <Typography variant="h6" className={classes.title}>
+                        <img src={mazpen} alt="Logo" style = {{width:"4em", height:"4em"}}/>
+                        <img src={logo} alt="Logo" style = {{width:"4em", height:"4em"}}/>
+                    </Typography>
+                </Toolbar>
+            </AppBar>
 
-            <br/><br/>
-            <div id="my_camera"></div>
-        </center>
+            <div style={{position: "absolute", top: "-100px"}}>
+                מספר אישי:
+                <input type="text"
+                       name="peronalNumber"
+                       id="peronalNumber"/>
+            </div>
+
+            <div style={{
+                display: "flex",
+                direction: "rtl",
+                flexDirection: "column",
+                justifyContent: "space-around",
+                height: "100%"
+            }}>
+                <div style={{display: "flex", justifyContent: "center",alignItems: "center", flexDirection: "row", marginTop: "3em"}}>
+                    <Card className={classes.card}>
+                        <CardContent>
+
+                            <Typography variant="h5" component="h2">
+                                {message}
+
+                                {isLoading &&
+                                <CircularProgress style = {{marginRight:"1em"}}/>}
+                            </Typography>
+
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div style={{flex: 1, display: "flex", justifyContent: "center", marginTop: "2em"}}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <div style={{display: "flex", justifyContent: "center", alignItems: "center", width: 0}}
+                                 id="my_camera"></div>
+                        </CardContent>
+                    </Card>
+                </div>
+           </div>
+        </div>
+
     )
 }
 
