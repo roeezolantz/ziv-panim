@@ -5,15 +5,16 @@ export default async function addFaceToPerson(personId, base64Pic) {
     var uri = `${domain}/face/v1.0/persongroups/${personGroupId}/persons/${personId}/persistedFaces`
 
     const body = b64toBlob(base64Pic);
+    const headers2 = Object.assign({}, headers, { ['Content-Type']: 'application/octet-stream' })
 
     return fetch(uri, {
         method: 'POST',
-        headers,
+        headers: headers2,
         body
     })
         .then(response => response.json())
         .then(res => {
-            return res.personId;
+            return res.persistedFaceId;
         })
         .catch(err => {
             console.log(err.stack)

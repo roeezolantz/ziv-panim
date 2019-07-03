@@ -11,13 +11,13 @@ export default async function addNewPerson(name, userData) {
         headers,
         body
     })
-        .then(response => response.json())
-        .then(res => {
-            return res.personId;
-        })
-        .catch(err => {
-            console.log(err.stack)
-            throw err;
-        }); // parses JSON response into native JavaScript objects
+    .then(response => response.json())
+    .then(res => {
+        return res.personId;
+    })
+    .catch(err => {
+        console.log(err.stack)
+        throw err;
+    }); // parses JSON response into native JavaScript objects
 };
 
