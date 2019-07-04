@@ -27,15 +27,15 @@ const AddNewPerson = () => {
     React.useEffect(() => {
         let soldierNameError = false;
         let IDError = false;
-        if (soldierName.length < 2)
-            soldierNameError = true;
+
+        soldierNameError = soldierName.length < 2;
         try {
-            let numericId = parseInt(ID);
-            if (!numericId || numericId < 100000 || numericId > 99999999)
-                IDError = true;
+            const numericId = parseInt(ID);
+            IDError = !numericId || numericId < 100000 || numericId > 99999999
         } catch (ex) {
             IDError = true;
         }
+
         if (!isFirstTime) {
             console.log("soldierNameError", soldierNameError, "IDError", IDError)
             setError({
