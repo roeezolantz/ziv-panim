@@ -52,7 +52,7 @@ const App = () => {
 
     const [statusColor, setstatusColor] = React.useState("#ffc220");
     const [isLoading, setIsLoading] = React.useState(false);
-    const [message, setMessage] = React.useState("אפשר להעביר חוגר עכשיו");
+    const [message, setMessage] = React.useState("יאללה להעביר חוגר");
 
     React.useEffect(() => {
         Webcam.set({
@@ -109,7 +109,7 @@ const App = () => {
             const backgroundColor = isVerify ? "#7be655" : "#f35858";
 
             setIsLoading(false);
-            setMessage(isVerify ? "אפשר לעבור עכשיו, יום טוב" : "החוגר לא נקלט. ניתן לנסות שוב או לגשת לאחראי");
+            setMessage(isVerify ? "אפשר לעבור עכשיו, יום טוב" : "לא נמצאה התאמה. יש לגשת לבדיקה ידנית");
 
             document.body.style.backgroundColor = backgroundColor;
             setstatusColor(backgroundColor);
@@ -118,7 +118,7 @@ const App = () => {
             setTimeout(() => {
                 document.body.style.backgroundColor = "#f5f5f5";
                 setstatusColor("#ffc220");
-                setMessage("אפשר להעביר חוגר עכשיו");
+                setMessage("יאללה להעביר חוגר");
             }, 2000);
 
             return;
